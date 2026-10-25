@@ -1,0 +1,65 @@
+services:
+  db:
+    image: postgres:16
+    container_name: moodle-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: moodle
+      POSTGRES_USER: moodle
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U moodle -d moodle"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  moodle:
+    image: moodlehq/moodle-php-apache:8.3
+    container_name: moodle
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      MOODLE_DBTYPE: pgsql
+      MOODLE_DBHOST: db
+      MOODLE_DBNAME: moodle
+      MOODLE_DBUSER: moodle
+      MOODLE_DBPASS: ${DB_PASSWORD}
+    volumes:
+      - ./moodle:/var/www/html
+      - ./moodledata:/var/www/moodledata
+
+  moodle-cli:
+    profiles: ["bootstrap"]
+    restart: "no"  # never restart-loop a one-shot job
+    image: moodlehq/moodle-php-apache:8.3
+    container_name: moodle-cli-bootstrap
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./moodle:/var/www/html
+      - ./moodledata:/var/www/moodledata
+      - ./setup-api-user.php:/setup-api-user.php:ro
+    entrypoint: >
+      bash -c "
+        echo 'Waiting for Moodle to be installed...'
+        while [ ! -f /var/www/html/config.php ]; do sleep 5; done
+        echo 'Running setup script...'
+        php /setup-api-user.php
+      "
+    environment:
+      API_USER_PASSWORD: ${API_USER_PASSWORD}
+
+# Assign an explicit name to the DB volume: "moodle_pg_data".
+#
+# Renaming the project directory, running "docker compose" from a different
+# folder, or recreating containers will never silently swap volumes again.
+volumes:
+  postgres_data:
+    name: moodle_pg_data

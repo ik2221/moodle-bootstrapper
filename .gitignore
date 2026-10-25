@@ -1,0 +1,6 @@
+moodle/
+moodledata/
+.env
+*.sql
+*.tgz
+backups/
