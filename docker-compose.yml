@@ -60,6 +60,16 @@ services:
 #
 # Renaming the project directory, running "docker compose" from a different
 # folder, or recreating containers will never silently swap volumes again.
+#
+# The `external: true` setting pins the project volume name permanently, so
+# it does not get recreated if the project directory is renamed.
+#
+# This means that Docker Compose will **never** create or delete this volume.
+# This is exactly what you want for a database that must persist across project
+# rebuilds. If you ever need a truly fresh database, you would delete the volume
+# manually with `docker volume rm moodle_pg_data` and then run
+# `docker compose up` again.
 volumes:
   postgres_data:
+    external: true
     name: moodle_pg_data
