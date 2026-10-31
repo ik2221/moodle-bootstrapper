@@ -146,14 +146,17 @@ token: check-installed ## Print the current API token
 	   JOIN mdl_user u ON u.id = t.userid \
 	   WHERE u.username = 'api_client' LIMIT 1"
 
+# Smoke-test the token against core_webservice_get_site_info
+# `jq .` pretty-prints the JSON output (requires jq installed)
 .PHONY: verify
-verify: check-installed ## Smoke-test the token against core_webservice_get_site_info
+verify: check-installed
 	@tok=$$($(MAKE) -s token); \
 	test -n "$$tok" || (echo "No token. Run: make bootstrap"; exit 1); \
 	curl -s http://localhost:8080/webservice/rest/server.php \
 	  --data-urlencode "wstoken=$$tok" \
 	  --data-urlencode "wsfunction=core_webservice_get_site_info" \
-	  --data-urlencode "moodlewsrestformat=json"
+	  --data-urlencode "moodlewsrestformat=json" \
+	| jq .
 
 .PHONY: clean-bootstrap
 clean-bootstrap: ## Remove leftover one-shot moodle-cli containers (rarely needed)
