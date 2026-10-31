@@ -39,8 +39,8 @@ check-env: check-root
 
 .PHONY: check-moodle-code
 check-moodle-code: check-root
-	@test -f $(MOODLE_DIR)/version.php \
-	  || (echo "ERROR: $(MOODLE_DIR)/version.php missing. See README (submodule or fetch script)."; exit 1)
+	@test -f $(MOODLE_DIR)/public/version.php \
+	  || (echo "ERROR: $(MOODLE_DIR)/public/version.php missing. See README (submodule or fetch script)."; exit 1)
 
 .PHONY: check-compose
 check-compose: check-env
