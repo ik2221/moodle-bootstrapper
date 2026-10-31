@@ -105,3 +105,15 @@ empty directory.** If a file "vanishes" inside a container while `ls` on the
 host says the path is gone, the mount source is wrong — `ls -ld` inside the
 container (leading `d`) confirms it.
 
+### Missing capabilities
+
+Adding a new function to the `$FUNCTIONS` array in the
+`scripts/setup-api-user.php` may not be enough — you need to check if the
+"API Client" user is missing any capabilities in: Moodle home page -> Site
+administration -> Server -> Web services -> Manage tokens. There, look for the
+user named "API Client". If the **Missing Capabilities** column on the right
+lists anything, those capabilities must be added to the `$CAPABILITIES` array
+in the PHP script.
+
+Re-run `make bootstrap` after editing the PHP script to apply the changes.
+
