@@ -94,10 +94,22 @@ ps: ## Show container status
 
 .PHONY: logs
 logs: ## Follow all logs (Ctrl-C to exit)
+	@echo ""
+	@echo "-----------------------------------"
+	@echo "    Entering the Docker logs..."
+	@echo "    Use Ctrl-C to exit."
+	@echo "-----------------------------------"
+	@echo ""
 	$(COMPOSE) logs -f
 
 .PHONY: logs-db
 logs-db: ## Follow db logs
+	@echo ""
+	@echo "--------------------------------------------"
+	@echo "    Entering the Docker database logs..."
+	@echo "    Use Ctrl-C to exit."
+	@echo "--------------------------------------------"
+	@echo ""
 	$(COMPOSE) logs -f $(DB_SERVICE)
 
 .PHONY: shell-db
