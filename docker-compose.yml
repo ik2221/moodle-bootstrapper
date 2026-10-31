@@ -45,7 +45,7 @@ services:
     volumes:
       - ./moodle:/var/www/html
       - ./moodledata:/var/www/moodledata
-      - ./setup-api-user.php:/setup-api-user.php:ro
+      - ./scripts/setup-api-user.php:/setup-api-user.php:ro
     entrypoint: >
       bash -c "
         echo 'Waiting for Moodle to be installed...'

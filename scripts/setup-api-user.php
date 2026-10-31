@@ -1,4 +1,9 @@
 <?php
+if (PHP_SAPI === 'cli') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+}
+
 // Run inside the moodle-cli container. Idempotent: safe to run repeatedly.
 //
 // Run this script with this shell command:
@@ -76,12 +81,30 @@ $FUNCTIONS = [
 ];
 
 $CAPABILITIES = [
-    'webservice/rest:use'   => CAP_ALLOW,
+
+    # Web services
+    'webservice/rest:use'             => CAP_ALLOW,
+
+    # Course access / editing
+    'moodle/course:create'            => CAP_ALLOW,
+    'moodle/course:update'            => CAP_ALLOW,
+    'moodle/course:useremail'         => CAP_ALLOW,
+    'moodle/course:view'              => CAP_ALLOW,
+    'moodle/course:viewhiddencourses' => CAP_ALLOW,
+    'moodle/course:visibility'        => CAP_ALLOW,
+
+    // User access / editing
+    'moodle/user:create'             => CAP_ALLOW,
+    'moodle/user:update'             => CAP_ALLOW,
+    'moodle/user:viewdetails'        => CAP_ALLOW,
+    'moodle/user:viewhiddendetails'  => CAP_ALLOW,
+
+    # Role / enrollment
+    'enrol/manual:enrol' => CAP_ALLOW,
+    'moodle/role:assign' => CAP_ALLOW,
+
+    // Grade report
     'gradereport/user:view' => CAP_ALLOW,
-    'moodle/course:create'  => CAP_ALLOW,
-    'moodle/user:create'    => CAP_ALLOW,
-    'moodle/role:assign'    => CAP_ALLOW,
-    'enrol/manual:enrol'    => CAP_ALLOW,
 ];
 
 // ---------------- HELPERS ----------------

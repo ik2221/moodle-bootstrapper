@@ -65,6 +65,15 @@ check-installed: check-healthy
 	  echo "ERROR: database is empty. Run: make init"; exit 1; \
 	fi
 
+.PHONY: check-mount
+check-mount: check-env
+	@docker compose --profile bootstrap run --rm --no-deps --entrypoint /bin/sh $(CLI_SERVICE) -c \
+	  'test -f /setup-api-user.php' \
+	  || (echo "ERROR: /setup-api-user.php is not a regular file in the container."; \
+	      echo "       Likely a wrong source path in docker-compose.yml."; \
+	      echo "       Docker silently creates a missing host path as an EMPTY DIRECTORY."; \
+	      exit 1)
+
 .PHONY: check-empty
 check-empty: check-healthy
 	@n=$$($(COMPOSE) exec -T $(DB_SERVICE) psql -U moodle -d moodle -tAc \
@@ -127,7 +136,7 @@ init: check-env check-healthy ## Initialise Moodle DB (runs install_database.php
 	bash scripts/initialize_moodle_db.sh
 
 .PHONY: bootstrap
-bootstrap: check-env check-installed ## Create API user/role/service/token (idempotent)
+bootstrap: check-env check-installed check-mount ## Create API user/role/service/token (idempotent)
 	$(COMPOSE) run --rm $(CLI_SERVICE)
 
 .PHONY: token

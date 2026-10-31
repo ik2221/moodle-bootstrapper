@@ -98,3 +98,10 @@ docker compose exec db psql -U moodle -d moodle -c \
 4. `docker compose run --rm moodle-cli`  (or manual fallback)
 5. reinstall Attendance plugin via UI → Site admin → Notifications
 
+## Caveats
+
+**A bind-mount source that doesn't exist on the host is silently created as an
+empty directory.** If a file "vanishes" inside a container while `ls` on the
+host says the path is gone, the mount source is wrong — `ls -ld` inside the
+container (leading `d`) confirms it.
+
