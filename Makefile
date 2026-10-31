@@ -48,6 +48,12 @@ check-compose: check-env
 
 .PHONY: check-healthy
 check-healthy: check-root
+	@n=$$($(COMPOSE) ps -q $(DB_SERVICE)); \
+	if [ -z "$$n" ]; then \
+	  echo "ERROR: no '$(DB_SERVICE)' container. Project-name mismatch?"; \
+	  echo "  Try: docker inspect moodle --format '{{index .Config.Labels \"com.docker.compose.project\"}}'"; \
+	  exit 1; \
+	fi
 	@timeout 60 bash -c 'until [ "$$($(COMPOSE) ps $(DB_SERVICE) --format "{{.Health}}")" = "healthy" ]; do sleep 2; done' \
 	  || (echo "ERROR: $(DB_SERVICE) not healthy within 60s. Run: make logs-db"; exit 1)
 
