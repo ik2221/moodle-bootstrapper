@@ -57,19 +57,19 @@ $SERVICE_NAME   = 'Moodle API Service';
 // Verify the Attendance Plugin method names in:
 // Site admin → Plugins → Web services → API Documentation
 $FUNCTIONS = [
-    'core_webservice_get_site_info',     # General site info / health check
+    'core_webservice_get_site_info',     // General site info / health check
 
-    # Methods needed strictly for data sync
-    'core_course_get_categories',        # Sync departments
-    'core_course_get_courses_by_field',  # Sync courses
-    'core_group_get_course_groups',      # Sync academic groups
-    'core_enrol_get_enrolled_users',     # Sync students (enrollment)
-    'mod_attendance_get_sessions',       # Sync sessions (lectures)
-    'mod_attendance_get_session',        # Sync attendance logs
-    'gradereport_user_get_grade_items',  # Sync grades
+    // Methods needed strictly for data sync
+    'core_course_get_categories',        // Sync departments
+    'core_course_get_courses_by_field',  // Sync courses
+    'core_group_get_course_groups',      // Sync academic groups
+    'core_enrol_get_enrolled_users',     // Sync students (enrollment)
+    'mod_attendance_get_sessions',       // Sync sessions (lectures)
+    'mod_attendance_get_session',        // Sync attendance logs
+    'gradereport_user_get_grade_items',  // Sync grades
 
-    # Extra methods
-    # TODO: Add method descriptions
+    // Extra methods
+    // TODO: Add method descriptions
     'core_course_get_courses',
     'core_course_create_courses',
     'core_user_create_users',
@@ -82,10 +82,10 @@ $FUNCTIONS = [
 
 $CAPABILITIES = [
 
-    # Web services
+    // Web services
     'webservice/rest:use'             => CAP_ALLOW,
 
-    # Course access / editing
+    // Course access / editing
     'moodle/course:create'            => CAP_ALLOW,
     'moodle/course:update'            => CAP_ALLOW,
     'moodle/course:useremail'         => CAP_ALLOW,
@@ -99,7 +99,7 @@ $CAPABILITIES = [
     'moodle/user:viewdetails'        => CAP_ALLOW,
     'moodle/user:viewhiddendetails'  => CAP_ALLOW,
 
-    # Role / enrollment
+    // Role / enrollment
     'enrol/manual:enrol' => CAP_ALLOW,
     'moodle/role:assign' => CAP_ALLOW,
 
