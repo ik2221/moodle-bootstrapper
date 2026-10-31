@@ -85,8 +85,15 @@ $CAPABILITIES = [
     // Web services
     'webservice/rest:use'             => CAP_ALLOW,
 
+    // Course Categories
+    'moodle/category:viewhiddencategories' => CAP_ALLOW,
+
+    // General
+    'moodle/site:accessallgroups' => CAP_ALLOW,
+
     // Course access / editing
     'moodle/course:create'            => CAP_ALLOW,
+    'moodle/course:managegroups'      => CAP_ALLOW,
     'moodle/course:update'            => CAP_ALLOW,
     'moodle/course:useremail'         => CAP_ALLOW,
     'moodle/course:view'              => CAP_ALLOW,
