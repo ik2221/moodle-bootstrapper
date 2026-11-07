@@ -98,6 +98,7 @@ $CAPABILITIES = [
     'moodle/course:useremail'         => CAP_ALLOW,
     'moodle/course:view'              => CAP_ALLOW,
     'moodle/course:viewhiddencourses' => CAP_ALLOW,
+    'moodle/course:viewparticipants'  => CAP_ALLOW,
     'moodle/course:visibility'        => CAP_ALLOW,
 
     // User access / editing
