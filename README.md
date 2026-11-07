@@ -117,3 +117,44 @@ in the PHP script.
 
 Re-run `make bootstrap` after editing the PHP script to apply the changes.
 
+### Missing Cron
+
+The `moodlehq/moodle-php-apache:8.3` image this project is using is a
+**runtime-only** image (PHP + Apache). Unlike some production-oriented Moodle
+images that bundle a cron daemon by default, this official image does **not**
+include a running cron service. Without a separate process invoking
+`admin/cli/cron.php`, Moodle's scheduled and ad-hoc background tasks will
+simply sit in the queue forever.
+
+It is an expected missing piece in a basic Docker Compose deployment.
+
+The quickest way to confirm cron is the missing piece is to trigger it once by
+hand:
+
+```sh
+docker compose exec moodle php admin/cli/cron.php
+```
+
+(You can now check the Cron Logs in **Site administration → Server → Tasks →
+Task logs**.)
+
+To enable cron, you have a few options:
+
+#### Option A — Host Cron (simplest)
+
+Add a line to your host's crontab (run `crontab -e`):
+
+```cron
+* * * * * cd /path/to/repo/moodle-bootstrapper && docker compose exec -T moodle php admin/cli/cron.php > /dev/null 2>&1
+```
+
+This uses the host to trigger cron inside the running container. It is easy to
+debug because you can run the same command manually.
+
+#### Option B — Dedicated Cron Sidecar (more self-contained)
+
+(Check out the `moodle-cron` service section in `docker-compose.yml`.)
+
+Start it with `docker compose --profile cron up -d moodle-cron`. This keeps
+cron isolated from the web container.
+

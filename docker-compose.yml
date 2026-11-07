@@ -56,6 +56,24 @@ services:
     environment:
       API_USER_PASSWORD: ${API_USER_PASSWORD}
 
+  moodle-cron:
+    image: moodlehq/moodle-php-apache:8.3
+    profiles: ["cron"]
+    restart: unless-stopped
+    depends_on:
+      moodle:
+        condition: service_started
+    volumes:
+      - ./moodle:/var/www/html
+      - ./moodledata:/var/www/moodledata
+    entrypoint: >
+      bash -c "
+        while true; do
+          php /var/www/html/admin/cli/cron.php
+          sleep 60
+        done
+      "
+
 # Assign an explicit name to the DB volume: "moodle_pg_data".
 #
 # Renaming the project directory, running "docker compose" from a different
