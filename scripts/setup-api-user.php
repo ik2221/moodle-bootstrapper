@@ -112,7 +112,14 @@ $CAPABILITIES = [
     'moodle/role:assign' => CAP_ALLOW,
 
     // Grade report
-    'gradereport/user:view' => CAP_ALLOW,
+
+    # This capability allows a user to view assignment grades and feedback
+    # (both text and uploaded files) without being able to change them.
+    'mod/assign:viewgrades'   => CAP_ALLOW,
+    'gradereport/grader:view' => CAP_ALLOW, # This allows a user to view the course Gradebook
+    'gradereport/user:view'   => CAP_ALLOW, # Grants access to the user grade report interface
+    'moodle/grade:view'       => CAP_ALLOW, # View your own grades
+    'moodle/grade:viewall'    => CAP_ALLOW, # View other users' grades
 ];
 
 // ---------------- HELPERS ----------------
