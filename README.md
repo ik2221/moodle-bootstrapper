@@ -155,6 +155,16 @@ debug because you can run the same command manually.
 
 (Check out the `moodle-cron` service section in `docker-compose.yml`.)
 
-Start it with `docker compose --profile cron up -d moodle-cron`. This keeps
-cron isolated from the web container.
+Start it with:
 
+```sh
+docker compose --profile cron up -d moodle-cron
+```
+
+This keeps cron isolated from the web container.
+
+To **stop** it, use:
+
+```sh
+docker compose --profile cron stop moodle-cron
+```
