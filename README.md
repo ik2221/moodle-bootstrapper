@@ -141,3 +141,34 @@ Task logs**.)
 To enable **cron**, there are dedicated targets defined in the Makefile. They
 operate using the host device's cron daemon, not inside the Docker container.
 
+## Makefile: Cron
+
+A small summary:
+- `make cron-install` adds a `*/5 * * * *` crontab entry.
+- Output goes to `logs/cron.log` (gitignored).
+- The log grows; truncate occasionally: `: > logs/cron.log`.
+- For a production-like instance, change `CRON_SCHEDULE` to `* * * * *`
+(update every minute).
+
+### Cron usage
+
+```
+make cron-install    # add the crontab line
+make cron-status     # confirm it's installed + see recent output
+make cron            # run once, manually (useful after install, to clear backlog)
+make cron-uninstall  # remove the crontab line
+```
+
+A sensible first sequence after installing:
+
+```
+make cron-install
+make cron                # clear any queued tasks immediately
+sleep 60
+make cron-status         # should show a timestamped run in the log
+```
+
+### Cron log size growth
+
+The log grows about 2-10 KB per run. At 5-minute intervals that's ~1–5 MB/month.
+
