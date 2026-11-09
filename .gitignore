@@ -5,3 +5,7 @@ moodledata/
 *.sql
 *.tgz
 backups/
+
+## cron logs
+logs/
+

@@ -15,6 +15,12 @@ DB_SERVICE    := db
 MOODLE_SERVICE := moodle
 CLI_SERVICE   := moodle-cli
 
+# --- cron ---
+DOCKER        := $(shell command -v docker)
+CRON_MARKER   := "# moodle-cron (managed by Makefile — do not edit by hand)"
+CRON_SCHEDULE := */5 * * * *
+CRON_LOG      := $(CURDIR)/logs/cron.log
+
 # ---------- help ----------
 
 .PHONY: help
@@ -178,6 +184,42 @@ restore: check-env check-empty ## Restore DB from FILE=backups/db-*.sql (require
 	@test -f "$(FILE)" || (echo "No such file: $(FILE)"; exit 1)
 	$(COMPOSE) exec -T $(DB_SERVICE) psql -U moodle -d moodle < $(FILE)
 	@echo "Restored from $(FILE)"
+
+# ---------- cron ----------
+
+.PHONY: cron
+cron: check-installed ## Run Moodle cron once (process queued tasks)
+	$(COMPOSE) exec -T $(MOODLE_SERVICE) php admin/cli/cron.php
+
+.PHONY: cron-install
+cron-install: check-env ## Install host crontab entry (idempotent)
+	@test -n "$(DOCKER)" || (echo "ERROR: docker not found in PATH"; exit 1)
+	@mkdir -p $(dir $(CRON_LOG))
+	@line='$(CRON_SCHEDULE) cd "$(CURDIR)" && $(DOCKER) compose exec -T $(MOODLE_SERVICE) php admin/cli/cron.php >> "$(CRON_LOG)" 2>&1 $(CRON_MARKER)'; \
+	if crontab -l 2>/dev/null | grep -qF '$(CRON_MARKER)'; then \
+	  echo "already installed:"; \
+	  crontab -l | grep -F '$(CRON_MARKER)'; \
+	else \
+	  ( crontab -l 2>/dev/null; echo "$$line" ) | crontab -; \
+	  echo "installed:"; \
+	  crontab -l | grep -F '$(CRON_MARKER)'; \
+	fi
+
+.PHONY: cron-uninstall
+cron-uninstall: ## Remove the crontab entry installed by cron-install
+	@if crontab -l 2>/dev/null | grep -qF '$(CRON_MARKER)'; then \
+	  crontab -l | grep -vF '$(CRON_MARKER)' | crontab -; \
+	  echo "removed."; \
+	else \
+	  echo "no managed cron entry found."; \
+	fi
+
+.PHONY: cron-status
+cron-status: ## Show managed cron entry + tail of cron log
+	@echo "--- crontab ---"; \
+	crontab -l 2>/dev/null | grep -F '$(CRON_MARKER)' || echo "not installed"; \
+	echo "--- last log lines ---"; \
+	tail -n 10 $(CRON_LOG) 2>/dev/null || echo "no log yet"
 
 # ---------- destructive ----------
 
