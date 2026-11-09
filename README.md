@@ -138,33 +138,6 @@ docker compose exec moodle php admin/cli/cron.php
 (You can now check the Cron Logs in **Site administration → Server → Tasks →
 Task logs**.)
 
-To enable cron, you have a few options:
+To enable **cron**, there are dedicated targets defined in the Makefile. They
+operate using the host device's cron daemon, not inside the Docker container.
 
-#### Option A — Host Cron (simplest)
-
-Add a line to your host's crontab (run `crontab -e`):
-
-```cron
-* * * * * cd /path/to/repo/moodle-bootstrapper && docker compose exec -T moodle php admin/cli/cron.php > /dev/null 2>&1
-```
-
-This uses the host to trigger cron inside the running container. It is easy to
-debug because you can run the same command manually.
-
-#### Option B — Dedicated Cron Sidecar (more self-contained)
-
-(Check out the `moodle-cron` service section in `docker-compose.yml`.)
-
-Start it with:
-
-```sh
-docker compose --profile cron up -d moodle-cron
-```
-
-This keeps cron isolated from the web container.
-
-To **stop** it, use:
-
-```sh
-docker compose --profile cron stop moodle-cron
-```
